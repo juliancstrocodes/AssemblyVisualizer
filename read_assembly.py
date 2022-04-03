@@ -25,9 +25,9 @@ for assembly_line in commands:
         new_f.write("## " + assembly_line + "\n")
         if command in INSTRUCTIONS:
             new_f.write("<strong>Assembly Command<strong>: " +
-                        " ".join(INSTRUCTIONS[command][1]) + "\n")
+                        " ".join(INSTRUCTIONS[command][1]) + "\n\n")
             new_f.write("<strong>Bytes<strong>: " +
-                        bits + " == " + BITS[bits] + "\n")
+                        bits + " == " + BITS[bits] + "\n\n")
             new_f.write("> " + INSTRUCTIONS[command][2] + "\n")
             new_f.write("![image](" + INSTRUCTIONS[command][0] + ")\n")
             # print("Assembly Command: " + " ".join(INSTRUCTIONS[command][1]))
