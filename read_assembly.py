@@ -13,7 +13,7 @@ for line in f:
 
 new_f = open("output_file.md", "w")
 new_f.write(
-    "# Assembly Commands from File (copy and paste to https://stackedit.io/app#(\n\n")
+    "# Assembly Commands from File (copy and paste to https://stackedit.io/app#)\n\n")
 # Reads the elements of each line and prints appropriate instructions
 for assembly_line in commands:
     try:
@@ -43,3 +43,4 @@ for assembly_line in commands:
         new_f.write("\n")
     except:
         print("Error: Invalid instruction ", command)
+new_f.write("<h6>https://flint.cs.yale.edu/cs421/papers/x86-asm/asm.html</h6>")
