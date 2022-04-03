@@ -22,37 +22,61 @@ DEFINITIONS = ["The mov instruction copies the data item referred to by its firs
                "Jump when less than or equal to. These instructions are conditional jumps that are based on the status of a set of condition codes that are stored in a special register called the machine status word. The contents of the machine status word include information about the last arithmetic operation performed. For example, one bit of this word indicates if the last result was zero. Another indicates if the last result was negative. Based on these condition codes, a number of conditional jumps can be performed. For example, the jz instruction performs a jump to the specified operand label if the result of the last arithmetic operation was zero. Otherwise, control proceeds to the next instruction in sequence.",
                "Compare the values of the two specified operands, setting the condition codes in the machine status word appropriately. This instruction is equivalent to the sub instruction, except the result of the subtraction is discarded instead of replacing the first operand.",
                "These instructions implement a subroutine call and return. The call instruction first pushes the current code location onto the hardware supported stack in memory (see the push instruction for details), and then performs an unconditional jump to the code location indicated by the label operand. Unlike the simple jump instructions, the call instruction saves the location to return to when the subroutine completes.",
-               "The ret instruction implements a subroutine return mechanism. This instruction first pops a code location off the hardware supported in-memory stack (see the pop instruction for details). It then performs an unconditional jump to the retrieved code location."
+               "The ret instruction implements a subroutine return mechanism. This instruction first pops a code location off the hardware supported in-memory stack (see the pop instruction for details). It then performs an unconditional jump to the retrieved code location.",
+               "Converts signed long to signed double long."
                ]
 
-INSTRUCTIONS = dict({
-    "mov": ["url", "Move", DEFINITIONS[0]],
-    "push": ["url", "Push on stack", DEFINITIONS[1]],
-    "pop": ["url", "Pop from stack", DEFINITIONS[2]],
-    "lea": ["url", "Load effective address", DEFINITIONS[3]],
-    "add": ["url", "Integer addition", DEFINITIONS[4]],
-    "sub": ["url", "Integer subtraction", DEFINITIONS[5]],
-    "inc": ["url", "Increment", DEFINITIONS[6]],
-    "dec": ["url", "Decrement", DEFINITIONS[7]],
-    "imul": ["url", "Integer multiply", DEFINITIONS[8]],
-    "idiv": ["url", "Integer divide", DEFINITIONS[9]],
-    "and": ["url", "Bitwise logical and", DEFINITIONS[10]],
-    "or": ["url", "Bitwise logical or", DEFINITIONS[11]],
-    "xor": ["url", "Bitwise logical xor", DEFINITIONS[12]],
-    "not": ["url", "Bitwise logical not", DEFINITIONS[13]],
-    "neg": ["url", "Negate", DEFINITIONS[14]],
-    "shl": ["url", "Shift left", DEFINITIONS[15]],
-    "shr": ["url", "Shift right", DEFINITIONS[16]],
-    "jmp": ["url", "Jump", DEFINITIONS[17]],
-    "je": ["url", "Jump when equal", DEFINITIONS[18]],
-    "jne": ["url", "Jump when not equal", DEFINITIONS[19]],
-    "jz": ["url", "Jump when last result was zero", DEFINITIONS[20]],
-    "jg": ["url", "Jump when greater than", DEFINITIONS[21]],
-    "jge": ["url", "Jump when greater or equal to", DEFINITIONS[22]],
-    "jl": ["url", "Jump when less than", DEFINITIONS[23]],
-    "jle": ["url", "Jump when less than or equal to", DEFINITIONS[24]],
-    "cmp": ["url", "Compare", DEFINITIONS[25]],
-    "call": ["url", "Call", DEFINITIONS[26]],
-    "ret": ["url", "Return", DEFINITIONS[27]]
+BITS = dict({
+    "b": "1 byte",
+    "w": "2 bytes",
+    "l": "4 bytes",
+    "q": "8 bytes"
 })
 
+
+def get_instruction_info(registers):
+    v_or_r = []
+    args = []
+    for i in range(3):
+        if i < len(registers):
+            if registers[i].startswith("(") and registers[i].endswith(")"):
+                v_or_r.append("value")
+                args.append(registers[i])
+            else:
+                v_or_r.append("register")
+                args.append(registers[i])
+        else:
+            v_or_r.append(None)
+            args.append(None)
+
+    return dict({
+        "mov": ["https://i.ytimg.com/vi/0_r-3eWB54c/hq720.jpg?sqp=-oaymwEhCK4FEIIDSFryq4qpAxMIARUAAAAAGAElAADIQj0AgKJD&rs=AOn4CLDlD2i6F3GA6o1dmrfPnUxHj0nsfw", ["Move", v_or_r[0], "in", args[0], "to", v_or_r[1], "in", args[1]], DEFINITIONS[0]],
+        "push": ["url", ["Push", v_or_r[0], args[0], "on stack"], DEFINITIONS[1]],
+        "pop": ["url", ["Pop", v_or_r[0], args[0], "from stack"], DEFINITIONS[2]],
+        "lea": ["url", "Load effective address", DEFINITIONS[3]],
+        "add": ["url", "Integer addition", DEFINITIONS[4]],
+        "sub": ["url", "Integer subtraction", DEFINITIONS[5]],
+        "inc": ["url", "Increment", DEFINITIONS[6]],
+        "dec": ["url", "Decrement", DEFINITIONS[7]],
+        "imul": ["url", "Integer multiply", DEFINITIONS[8]],
+        "idiv": ["url", ["Divide value in (%eax) to value in", args[0]], DEFINITIONS[9]],
+        "and": ["url", "Bitwise logical and", DEFINITIONS[10]],
+        "or": ["url", "Bitwise logical or", DEFINITIONS[11]],
+        "xor": ["url", "Bitwise logical xor", DEFINITIONS[12]],
+        "not": ["url", "Bitwise logical not", DEFINITIONS[13]],
+        "neg": ["url", "Negate", DEFINITIONS[14]],
+        "shl": ["url", "Shift left", DEFINITIONS[15]],
+        "shr": ["url", "Shift right", DEFINITIONS[16]],
+        "jmp": ["url", "Jump", DEFINITIONS[17]],
+        "je": ["url", "Jump when equal", DEFINITIONS[18]],
+        "jne": ["url", "Jump when not equal", DEFINITIONS[19]],
+        "jz": ["url", "Jump when last result was zero", DEFINITIONS[20]],
+        "jg": ["url", "Jump when greater than", DEFINITIONS[21]],
+        "jge": ["url", "Jump when greater or equal to", DEFINITIONS[22]],
+        "jl": ["url", "Jump when less than", DEFINITIONS[23]],
+        "jle": ["url", "Jump when less than or equal to", DEFINITIONS[24]],
+        "cmp": ["url", "Compare", DEFINITIONS[25]],
+        "call": ["url", "Call", DEFINITIONS[26]],
+        "ret": ["url", "Return", DEFINITIONS[27]],
+        "cltd": ["url", "Convert long to double; moves sign bit of (%eax) to %edx", DEFINITIONS[28]],
+    })
