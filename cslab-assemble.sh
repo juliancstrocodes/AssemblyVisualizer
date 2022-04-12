@@ -18,3 +18,4 @@ scp $DIRECTORY:$FILE_PATH ./
 FILE_NAME="${FILE_PATH##*/}"
 mv $FILE_NAME input_file.s
 echo "----------------------------------------------------------------"
+python3 read_assembly.py

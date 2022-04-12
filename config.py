@@ -39,12 +39,24 @@ def get_instruction_info(registers):
     args = []
     for i in range(3):
         if i < len(registers):
-            if registers[i].startswith("(") and registers[i].endswith(")"):
+
+            if registers[i][0] == "$":
+                print(registers[i])
                 v_or_r.append("value")
-                args.append(registers[i])
-            else:
+                args.append(registers[i][1:])
+            elif registers[i][0] == "-":
                 v_or_r.append("register")
-                args.append(registers[i])
+                args.append(registers[i][1:])
+            elif registers[i][0].isdigit():
+                v_or_r.append("value")
+                args.append(registers[i][0:-1])
+            elif registers[i][0] == "(" and registers[i][-1] == ")":
+                v_or_r.append("register")
+                args.append(registers[i][1:-1])
+            elif registers[i][0] == "%":
+                v_or_r.append("register")
+                args.append(registers[i][1:])
+
         else:
             v_or_r.append(None)
             args.append(None)
