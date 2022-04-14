@@ -11,10 +11,11 @@ div_qr:
 	movq	%rsp, %rbp
 	.cfi_def_cfa_register 6
 	movl	%edi, %eax
-	incl	(%eax)
+	cmpl	%rsp, %rsi
+	je		.L0
 	movq	%rdx, %r10
 	cltd
-	idivl	%esi
+	divl	%esi
 	movl	%edx, (%r10)
 	popq	%rbp
 	.cfi_def_cfa 7, 8
