@@ -1,6 +1,16 @@
 from config import get_instruction_info
 from config import BITS
 
+# Professor's Advice:
+#  - Look into code for assembly, gcc, gas, and objdump, LLVM
+#  - Portion that translates assembly code into the machine code (assembly code parser)
+#       - Much simpler than parsing source code (one-one correspondence)
+#       - No AI
+#  - Make dictionary of concurrent memory states at every moment
+
+# Define class for the register/address:
+# - Fields for class are set as necessary
+
 f = open("input_file.s", "r")
 INSTRUCTIONS = get_instruction_info([])
 

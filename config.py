@@ -27,68 +27,66 @@ DEFINITIONS = ["The mov instruction copies the data item referred to by its firs
                ]
 
 BITS = dict({
-    "b": "1 byte",
-    "w": "2 bytes",
-    "l": "4 bytes",
-    "q": "8 bytes"
+    "b": "8",
+    "w": "16",
+    "l": "32",
+    "q": "64"
 })
 
 
-def get_instruction_info(registers):
-    v_or_r = []
-    args = []
-    for i in range(3):
-        if i < len(registers):
-
-            if registers[i][0] == "$":
-                print(registers[i])
-                v_or_r.append("value")
-                args.append(registers[i][1:])
-            elif registers[i][0] == "-":
-                v_or_r.append("register")
-                args.append(registers[i][1:])
-            elif registers[i][0].isdigit():
-                v_or_r.append("value")
-                args.append(registers[i][0:-1])
-            elif registers[i][0] == "(" and registers[i][-1] == ")":
-                v_or_r.append("register")
-                args.append(registers[i][1:-1])
-            elif registers[i][0] == "%":
-                v_or_r.append("register")
-                args.append(registers[i][1:])
-
-        else:
-            v_or_r.append(None)
-            args.append(None)
-
+def get_register_dict():
     return dict({
-        "mov": ["https://i.ytimg.com/vi/0_r-3eWB54c/hq720.jpg?sqp=-oaymwEhCK4FEIIDSFryq4qpAxMIARUAAAAAGAElAADIQj0AgKJD&rs=AOn4CLDlD2i6F3GA6o1dmrfPnUxHj0nsfw", ["Move", v_or_r[0], "in", args[0], "to", v_or_r[1], "in", args[1]], DEFINITIONS[0]],
-        "push": ["url", ["Push", v_or_r[0], args[0], "on stack"], DEFINITIONS[1]],
-        "pop": ["url", ["Pop", v_or_r[0], args[0], "from stack"], DEFINITIONS[2]],
-        "lea": ["url", "Load effective address", DEFINITIONS[3]],
-        "add": ["url", "Integer addition", DEFINITIONS[4]],
-        "sub": ["url", "Integer subtraction", DEFINITIONS[5]],
-        "inc": ["url", "Increment", DEFINITIONS[6]],
-        "dec": ["url", "Decrement", DEFINITIONS[7]],
-        "imul": ["url", "Integer multiply", DEFINITIONS[8]],
-        "idiv": ["url", ["Divide value in (%eax) to value in", args[0]], DEFINITIONS[9]],
-        "and": ["url", "Bitwise logical and", DEFINITIONS[10]],
-        "or": ["url", "Bitwise logical or", DEFINITIONS[11]],
-        "xor": ["url", "Bitwise logical xor", DEFINITIONS[12]],
-        "not": ["url", "Bitwise logical not", DEFINITIONS[13]],
-        "neg": ["url", "Negate", DEFINITIONS[14]],
-        "shl": ["url", "Shift left", DEFINITIONS[15]],
-        "shr": ["url", "Shift right", DEFINITIONS[16]],
-        "jmp": ["url", "Jump", DEFINITIONS[17]],
-        "je": ["url", "Jump when equal", DEFINITIONS[18]],
-        "jne": ["url", "Jump when not equal", DEFINITIONS[19]],
-        "jz": ["url", "Jump when last result was zero", DEFINITIONS[20]],
-        "jg": ["url", "Jump when greater than", DEFINITIONS[21]],
-        "jge": ["url", "Jump when greater or equal to", DEFINITIONS[22]],
-        "jl": ["url", "Jump when less than", DEFINITIONS[23]],
-        "jle": ["url", "Jump when less than or equal to", DEFINITIONS[24]],
-        "cmp": ["url", "Compare", DEFINITIONS[25]],
-        "call": ["url", "Call", DEFINITIONS[26]],
-        "ret": ["url", "Return", DEFINITIONS[27]],
-        "cltd": ["url", "Convert long to double; moves sign bit of (%eax) to %edx", DEFINITIONS[28]],
+        "rax": ["eax", "ax", "ah", "al"],
+        "rbx": ["ebx", "bx", "bh", "bl"],
+        "rcx": ["ecx", "cx", "ch", "cl"],
+        "rdx": ["edx", "dx", "dh", "dl"],
+        "rsi": ["esi", "si", "sil"],
+        "rdi": ["edi", "di", "dil"],
+        "rsp": ["esp", "sp", "spl"],
+        "rbp": ["ebp", "bp", "bpl"],
+        "r8": ["r8d", "r8w", "r8b"],
+        "r9": ["r9d", "r9w", "r9b"],
+        "r10": ["r10d", "r10w", "r10b"],
+        "r11": ["r11d", "r11w", "r11b"],
+        "r12": ["r12d", "r12w", "r12b"],
+        "r13": ["r13d", "r13w", "r13b"],
+        "r14": ["r14d", "r14w", "r14b"],
+        "r15": ["r15d", "r15w", "r15b"],
+        "rip": ["eip", "ip", "pc"]
+    })
+
+
+def get_instruction_info():
+    return dict({
+        "mov": ["src", "dst"],
+        "push": ["acted_on"],
+        "pop": [],
+        "lea": [],
+        "add": ["arithmetic_operations"],
+        "sub": ["arithmetic_operations"],
+        "inc": ["arithmetic_operations"],
+        "dec": ["arithmetic_operations"],
+        "imul": [DEFINITIONS[8]],
+        "mul": [DEFINITIONS[8]],
+        "idiv": [DEFINITIONS[9]],
+        "div": [DEFINITIONS[9]],
+        "and": ["dst", "src"],
+        "or": [DEFINITIONS[11]],
+        "xor": [DEFINITIONS[12]],
+        "not": [DEFINITIONS[13]],
+        "neg": [DEFINITIONS[14]],
+        "shl": [DEFINITIONS[15]],
+        "shr": [DEFINITIONS[16]],
+        "jmp": ["jump_to"],
+        "je": ["jump_to"],
+        "jne": ["jump_to"],
+        "jz": ["jump_to"],
+        "jg": ["jump_to"],
+        "jge": ["jump_to"],
+        "jl": ["jump_to"],
+        "jle": ["jump_to"],
+        "cmp": ["cmp_of, comp_with"],
+        "call": ["acted_on"],
+        "ret": [DEFINITIONS[27]],
+        "clt": [DEFINITIONS[28]],
     })

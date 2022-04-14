@@ -11,6 +11,7 @@ div_qr:
 	movq	%rsp, %rbp
 	.cfi_def_cfa_register 6
 	movl	%edi, %eax
+	incl	(%eax)
 	movq	%rdx, %r10
 	cltd
 	idivl	%esi
