@@ -1,5 +1,7 @@
 from config import get_instruction_info, get_register_dict
 import re
+from type_parsing import parse_types
+
 regex = re.compile('[^a-zA-Z0-9()]')
 
 INSTRUCTIONS = get_instruction_info()
@@ -160,7 +162,6 @@ def shift_operations(arg1, arg2, registers_used, addresses_used, mnemonic):
 
 def jump_begin(arg1, registers_used, addresses_used, mnemonic):
     # TODO: get value of linking label
-    print(f"Jump to {arg1}")
     return
 
 
@@ -181,9 +182,63 @@ def cmp_jump_to(arg1, arg2, registers_used, addresses_used, mnemonic, next_line)
     if (eval(f"{value_1} {INSTRUCTIONS[next_mnemonic][1]} {value_2}")):
         jump_begin(jump_dst, registers_used, addresses_used, mnemonic)
     else:
-        print("No Jump")
         return
 
     # TODO: handle "jz"
 
-    print("next line:", next_line)
+
+def mov_operation(arg1, arg2, registers_used, addresses_used):
+
+    value_1, is_value_1, arg1_cleaned = get_value(
+        arg1, registers_used, addresses_used)
+    value_2, is_value_2, arg2_cleaned = get_value(
+        arg2, registers_used, addresses_used)
+
+    if is_value_2:
+        addresses_used[arg2_cleaned] = value_1
+    else:
+        registers_used[arg2_cleaned] = value_1
+
+    return registers_used, addresses_used
+
+# TODO: finish operation and bugs
+
+
+def lea_operation(assembly_line, registers_used, addresses_used, mnemonic):
+    args = assembly_line.replace(mnemonic, "")
+    # get second argument
+    dist = regex.sub('', args.split(",")[-1].strip())
+    src = "".join(args.split(" ")[0:-1])[:-1]
+
+    args = parse_types(src)
+
+    base = 0
+    index = 0
+    for arg in args:
+        if arg.isalpha() and base == 0:
+            base = addresses_used[arg]
+        elif arg.isalpha() and index == 0:
+            index = addresses_used[arg]
+
+    # check for disp
+    if args[0].strip("-").isdigit():
+        disp = int(args[0])
+    else:
+        disp = 0
+
+    # check for scale (2, 4, 6, 8)
+    if args[-1].isdigit():
+        scale = int(args[-1])
+    else:
+        scale = 1
+
+    # Load effective address of the first argument
+    effective_address = hex(disp + (base + (index * scale)))
+
+    if dist[0] == "(":
+        # if dist is a register
+        addresses_used[dist[1:-1]] = effective_address
+    else:
+        registers_used[dist] = effective_address
+
+    return registers_used, addresses_used

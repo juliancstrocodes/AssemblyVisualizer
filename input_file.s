@@ -11,8 +11,7 @@ div_qr:
 	movq	%rsp, %rbp
 	.cfi_def_cfa_register 6
 	movl	%edi, %eax
-	cmpl	%rsp, %rsi
-	je		.L0
+	leaq	-1(%rsi, %rsp, 2), %edx
 	movq	%rdx, %r10
 	cltd
 	divl	%esi

@@ -7,6 +7,19 @@ INSTRUCTIONS = get_instruction_info()
 REGISTERS = get_register_dict()
 
 
+def print_stack(registers_used, addresses_used):
+    registers = ""
+    addresses = ""
+    for register in registers_used:
+        registers += "| " + str(register) + " | " + \
+            str(registers_used[register]) + "|\n"
+
+    for address in addresses_used:
+        addresses += "| " + str(address) + " | " + \
+            str(addresses_used[address]) + "|\n"
+    return registers, addresses
+
+
 def break_down_line(assembly_line):
     line = assembly_line.split()[0]
     args = assembly_line.split()[1:]
@@ -21,9 +34,20 @@ def break_down_line(assembly_line):
     return line, mnemonic, args, bits
 
 
+def write():
+    # make string that loops through registers_used
+    registers, addresses = print_stack(
+        registers_used, addresses_used)
+
+    new_f.write(
+        "| Registers | Value |\n| ----------- | ----------- |\n" + registers + "\n")
+    new_f.write(
+        "| Addresses | Value |\n| ----------- | ----------- |\n" + addresses + "\n")
+
+
 # TODO: memory address dictionary and register dictionary
-registers_used = {"rsp": 10, "eax": 3, "esi": 400, "rsi": 10}
-addresses_used = {"eax": 4, "2": None, "3": None, "4": None,
+registers_used = {"rsp": 10, "eax": 3, "esi": 400, "rsi": 10, "rbp": 69}
+addresses_used = {"eax": 4, "rsi": 6, "rsp": 9, "4": None,
                   "5": None, "6": None, "7": None, "8": None, "9": None, }
 
 new_f = open("example_file.md", "w")
@@ -40,32 +64,18 @@ for line in f:
 for index, assembly_line in enumerate(commands):
     line, mnemonic, args, bits = break_down_line(assembly_line)
 
-    if mnemonic is None:
+    if mnemonic not in INSTRUCTIONS:
         continue
 
-    new_f.write("## ```" + assembly_line + "```\n")
+    new_f.write(f"## ```{assembly_line}``` \n")
 
-    if assembly_line == "pushq %rbp" and commands[index + 1] == "movq %rsp, %rbp":
+    if (assembly_line == "pushq %rbp" and commands[index + 1] == "movq %rsp, %rbp"):
+        new_f.write("<h4>Opening up the stack frame</h4>\n\n")
+        # TODO initialize stack frame
         continue
-
-    if assembly_line == "popq %rbp" and commands[index + 1] == "ret":
+    if (assembly_line == "popq %rbp" and commands[index + 1] == "ret"):
+        new_f.write("<h4>Closing up the stack frame</h4>\n\n")
         continue
-
-    # make string that loops through registers_used
-    registers = ""
-    addresses = ""
-    for register in registers_used:
-        registers += "| " + str(register) + " | " + \
-            str(registers_used[register]) + "|\n"
-
-    for address in addresses_used:
-        addresses += "| " + str(address) + " | " + \
-            str(addresses_used[address]) + "|\n"
-
-    new_f.write(
-        "| Registers | Value |\n| ----------- | ----------- |\n" + registers + "\n")
-    new_f.write(
-        "| Addresses | Value |\n| ----------- | ----------- |\n" + addresses + "\n")
 
     try:
         if INSTRUCTIONS[mnemonic][0] == "arithmetic_operations":
@@ -77,6 +87,7 @@ for index, assembly_line in enumerate(commands):
                 arg2 = args[1]
             registers_used, addresses_used = summation_operations(
                 arg1, registers_used, addresses_used, mnemonic, arg2)
+            write()
         elif INSTRUCTIONS[mnemonic][0] == "mult_operations":
             if len(args) == 2:
                 arg1 = args[0]
@@ -88,10 +99,12 @@ for index, assembly_line in enumerate(commands):
                 arg3 = args[2]
             registers_used, addresses_used = mult_operations(
                 arg1, arg2, registers_used, addresses_used, mnemonic, arg3)
+            write()
         elif INSTRUCTIONS[mnemonic][0] == "div_operations":
             arg1 = args[0]
             registers_used, addresses_used = div_operations(
                 arg1, registers_used, addresses_used, mnemonic)
+            write()
         elif INSTRUCTIONS[mnemonic][0] == "bitwise_operations":
             if len(args) == 1:
                 arg1 = args[0]
@@ -101,15 +114,18 @@ for index, assembly_line in enumerate(commands):
                 arg2 = args[1]
             registers_used, addresses_used = bitwise_operations(
                 arg1, registers_used, addresses_used, mnemonic, arg2)
+            write()
         elif INSTRUCTIONS[mnemonic][0] == "shift_operations":
             arg1 = args[0]
             arg2 = args[1]
             registers_used, addresses_used = shift_operations(
                 arg1, arg2, registers_used, addresses_used, mnemonic)
+            write()
         elif INSTRUCTIONS[mnemonic][0] == "jump_begin":
             arg1 = args[0]
             registers_used, addresses_used = jump_begin(
                 arg1, registers_used, addresses_used, mnemonic)
+            write()
         elif INSTRUCTIONS[mnemonic][0] == "cmp_jump_to":
             # if its a cmp then it will look at current and next line
             if mnemonic == "cmp":
@@ -117,14 +133,22 @@ for index, assembly_line in enumerate(commands):
                 arg2 = args[1]
                 registers_used, addresses_used = cmp_jump_to(
                     arg1, arg2, registers_used, addresses_used, mnemonic, commands[index + 1])
+                write()
             else:
                 continue
-        else:
-            print("here")
+        elif INSTRUCTIONS[mnemonic][0] == "mov_operation":
+            arg1 = args[0]
+            arg2 = args[1]
+            registers_used, addresses_used = mov_operation(
+                arg1, arg2, registers_used, addresses_used)
+            write()
+        elif INSTRUCTIONS[mnemonic][0] == "lea_operation":
+            registers_used, addresses_used = lea_operation(
+                assembly_line, registers_used, addresses_used, mnemonic + bits)
+            write()
+        elif INSTRUCTIONS[mnemonic][0] == "frame_operation":
             continue
-
     except Exception as e:
-        print(e)
         continue
 new_f.write(
     "###### Author: [Julian Castro](https://www.linkedin.com/in/julian-castro-7950aa1a7/) - castrojv@bc.edu\n\n")
@@ -132,6 +156,7 @@ new_f.write(
 new_f.write(
     "<h6>References: https://flint.cs.yale.edu/cs421/papers/x86-asm/asm.html</h6>")
 
+# TODO: comparison operations need work
 # TODO: some operations do not have a bit end
 # TODO: opening and closing stack with call
-# print(registers_used, addresses_used)
+# TODO: break up operations by sections (.L0,...)
