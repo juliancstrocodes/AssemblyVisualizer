@@ -10,12 +10,17 @@ div_qr:
 	.cfi_offset 6, -16
 	movq	%rsp, %rbp
 	.cfi_def_cfa_register 6
-	movl	%edi, %eax
-	leaq	-1(%rsi, %rsp, 2), %edx
-	movq	%rdx, %r10
+	movl	%edi, -20(%rbp)
+	movl	%esi, -24(%rbp)
+	movq	%rdx, -32(%rbp)
+	movl	-20(%rbp), %eax
 	cltd
-	divl	%esi
-	movl	%edx, (%r10)
+	idivl	-24(%rbp)
+	movl	%eax, -4(%rbp)
+	movl	-20(%rbp), %eax
+	movq	-32(%rbp), %rax
+	movl	%edx, (%rax)
+	movl	-4(%rbp), %eax
 	popq	%rbp
 	.cfi_def_cfa 7, 8
 	ret

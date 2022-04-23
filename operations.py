@@ -15,6 +15,15 @@ def get_value(arg, registers_used, addresses_used):
         if arg_cleaned.isdigit():
             return int(arg_cleaned)
 
+        # if arg is a displacement from address
+        if arg_cleaned[0] == '-' or arg_cleaned[0].isdigit():
+            split = arg.split("(")
+            arg_cleaned = re.sub(r'[^a-zA-Z0-9\[\]]', '', split[1])
+            # split up disp from register
+            disp = int(split[0])
+            memory_address = int(registers_used[arg_cleaned]) + disp
+            return memory_address, True, arg_cleaned
+
         if arg_cleaned[0] == '(':
             address_of_register = addresses_used[arg_cleaned[1:-1]]
             return address_of_register, True, arg_cleaned[1:-1]
@@ -92,7 +101,7 @@ def div_operations(arg1, registers_used, addresses_used, mnemonic):
     # TODO: signed or unsigned division operations
     if mnemonic[0] == "i":
         # it is signed
-        return
+        mnemonic = mnemonic[1:]
 
     divisor = registers_used["eax"]
     value_1, is_value_1, arg1_cleaned = get_value(

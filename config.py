@@ -1,9 +1,33 @@
-BITS = dict({
-    "b": "8",
-    "w": "16",
-    "l": "32",
-    "q": "64"
-})
+# dictionary for bit value of each type
+BITS = {
+    "char": 8,
+    "int": 32,
+    "long": 64,
+    "short": 16,
+    "float": 32,
+    "double": 64,
+    "void": 0,
+    "unsigned": 32,
+    "signed": 32,
+    "pointer": 64
+}
+
+BITS_SUFFIX = {
+    "b": 8,
+    "w": 16,
+    "l": 32,
+    "q": 64,
+    # for void
+    "v": None,
+}
+
+# Dictionary of bit values with their corresponding registers for parameter placement
+ARG_REGISTERS = {
+    8: ["dil", "sil", "r8b", "r9b", "dl", "cl", "ch", "dh"],
+    16: ["di", "si", "dx", "cx", "r8w", "r9w"],
+    32: ["edi", "esi", "edx", "ecx", "r8d", "r9d"],
+    64: ["rdi", "rsi", "rdx", "rcx", "r8", "r9"]
+}
 
 
 def get_register_dict():
@@ -58,7 +82,7 @@ def get_instruction_info():
         "jl": ["cmp_jump_to", "<"],
         "jle": ["cmp_jump_to", "<="],
         "cmp": ["cmp_jump_to"],
-        "call": [],
+        "call": [""],
         "ret": ["frame_operation"],
-        "clt": [],
+        "clt": [""],
     })
